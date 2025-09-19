@@ -1,23 +1,6 @@
-// Settings/core.php
 <?php
 session_start();
-
-
-//for header redirection
-ob_start();
-
-//funtion to check for login
-if (!isset($_SESSION['id'])) {
-    header("Location: ../Login/login_register.php");
-    exit;
-}
-
-
-//function to get user ID
-
-
-//function to check for role (admin, customer, etc)
-
-
-
+function is_logged_in(){ return isset($_SESSION['customer_id']); }
+function current_user(){ return $_SESSION['customer'] ?? null; }
+function require_login(){ if(!is_logged_in()){ header('Location: /public/login.php'); exit; } }
 ?>
