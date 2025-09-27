@@ -2,77 +2,59 @@
 include_once 'db_cred.php';
 
 /**
- *@version 1.1
+ * @version 1.1
  */
 if (!class_exists('db_connection')) {
     class db_connection
     {
-        //properties
         public $db = null;
         public $results = null;
 
-        //connect
-        /**
-         * Database connection
-         * @return boolean
-         **/
         function db_connect()
         {
-            //connection with proper port parameter
-            $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE, PORT);
-            
-            //test the connection
-            if (mysqli_connect_errno()) {
-                return false;
-            } else {
-                return true;
+            // Close existing connection
+            if ($this->db) {
+                mysqli_close($this->db);
             }
+            
+            // Create new connection with error reporting
+            $this->db = @mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE, PORT);
+            
+            if (mysqli_connect_errno()) {
+                error_log("DB Connection Failed: " . mysqli_connect_error() . 
+                         " - Server: " . SERVER . 
+                         " - DB: " . DATABASE . 
+                         " - Port: " . PORT);
+                return false;
+            }
+            return true;
         }
         
         function db_conn()
         {
-            //connection with proper port parameter
-            $this->db = mysqli_connect(SERVER, USERNAME, PASSWD, DATABASE, PORT);
-            
-            //test the connection
-            if (mysqli_connect_errno()) {
+            if (!$this->db_connect()) {
                 return false;
-            } else {
-                return $this->db;
             }
+            return $this->db;
         }
 
-        //execute a query for SELECT statements
-        /**
-         * Query the Database for SELECT statements
-         * @param string $sqlQuery
-         * @return boolean
-         **/
         function db_query($sqlQuery)
         {
             if (!$this->db_connect()) {
-                return false;
-            } elseif ($this->db == null) {
+                error_log("DB Query Failed - No connection");
                 return false;
             }
 
-            //run query 
             $this->results = mysqli_query($this->db, $sqlQuery);
 
-            if ($this->results == false) {
+            if ($this->results === false) {
+                error_log("Query Error: " . mysqli_error($this->db) . " - Query: " . $sqlQuery);
                 return false;
-            } else {
-                return true;
             }
+            return true;
         }
 
-        //execute a query for INSERT, UPDATE, DELETE statements
-        /**
-         * Query the Database for INSERT, UPDATE, DELETE statements
-         * @param string $sqlQuery
-         * @return boolean
-         **/
-        function db_write_query($sqlQuery)
+function db_write_query($sqlQuery)
         {
             if (!$this->db_connect()) {
                 return false;
@@ -145,4 +127,5 @@ if (!class_exists('db_connection')) {
             return mysqli_insert_id($this->db);
         }
     }
-}
+}    
+?>

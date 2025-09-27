@@ -83,3 +83,21 @@ if ($result['status'] === 'success') {
 }
 
 echo json_encode($response);
+
+
+if ($result['status'] === 'success') {
+    // Set session variables for successful login
+    $customer = $result['customer'];
+    
+    $_SESSION['customer_id'] = $customer['customer_id'];
+    $_SESSION['customer_name'] = $customer['customer_name'];
+    $_SESSION['customer_email'] = $customer['customer_email'];
+    $_SESSION['user_role'] = $customer['user_role']; // This is crucial for role checking
+    $_SESSION['customer_country'] = $customer['customer_country'];
+    $_SESSION['customer_city'] = $customer['customer_city'];
+    $_SESSION['customer_contact'] = $customer['customer_contact'];
+    $_SESSION['customer_image'] = $customer['customer_image'];
+    $_SESSION['login_time'] = time();
+    
+    // ... rest of existing code ...
+}
